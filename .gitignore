@@ -45,6 +45,7 @@ Thumbs.db
 dino.py
 schoolmail_process_pack.zip
 setup_claude_glm52_mac.zsh
+schoolmail_process_pack/
 schoolmail_process_pack/docs/SchoolMailBridge_Kickoff_Process_Guide.docx
 schoolmail_process_pack/docs/SchoolMailBridge_Kickoff_Process_Guide.pdf
 schoolmail_process_pack/.env.example

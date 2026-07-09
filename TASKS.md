@@ -1,24 +1,24 @@
 Current state:
-The project has data/sample_emails/progress_report.eml.
+I have normalized email dictionaries from sample_email_reader.py.
 Task:
-Create app/sample_email_reader.py.
-Requirements:
-1. Read a local .eml file with Python's email package.
-2. Extract MessageID, From, Subject, Date, and bodytext.
-3. Prefer text/plain.
-4. If only HTML exists, convert HTML into readable plain text.
-5. Do not connect to the internet.
-6. Do not print the entire email body to logs.
-Return format:
-{
- "message_id": "...",
- "sender": "...",
- "subject": "...",
- "date": "...",
- "bodytext": "...",
- "sourcepath": "..."
-}
+Create:
+1. config/terms.json
+2. app/term_store.py
+3. app/termdetector.py
+terms.json fields:
+ term
+ zh
+ explanation
+ category
+- priority
+Detection requirements:
+ Search both email subject and bodytext.
+- Case-insensitive matching.
+- Avoid duplicate term results.
+- Return the complete matched terminology objects.
+ Do not use an LLM for this step.
+Include initial terminology:
+PowerSchool, Progress Report, Counselor, PSAT, GPA, AP, Transcript, Advisory, Block Schedule, Late Start.
 Acceptance tests:
-- Works for text/plain email.
-- Works for multipart email.
-- Returns empty body_text instead of crashing if no readable body exists
+- "Progress Report Available on PowerSchool" returns both Progress Report and PowerSchool.
+- "AP" should not accidentally match letters inside "application
