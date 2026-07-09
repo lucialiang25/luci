@@ -1,0 +1,56 @@
+# ── Secrets / environment ─────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Runtime data (ignored per project requirements) ──────────
+# The pipeline writes artifacts, push logs, the processed-fingerprint store,
+# and a generated HMAC secret here — none of it should be committed.
+runtime/
+
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# ── Virtual environments ─────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+
+# ── Test / type / coverage caches ────────────────────────────
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ── IDE / editor / OS ─────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+dino.py
+schoolmail_process_pack.zip
+setup_claude_glm52_mac.zsh
+schoolmail_process_pack/docs/SchoolMailBridge_Kickoff_Process_Guide.docx
+schoolmail_process_pack/docs/SchoolMailBridge_Kickoff_Process_Guide.pdf
+schoolmail_process_pack/.env.example
+schoolmail_process_pack/.gitignore
+schoolmail_process_pack/README.md
+schoolmail_process_pack/requirements.txt
+schoolmail_process_pack/TASKS.md
+schoolmail_process_pack/docs/structured_prompts.md
+schoolmail_process_pack/templates/TASKS_TEMPLATE.md

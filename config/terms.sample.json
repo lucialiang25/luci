@@ -1,0 +1,478 @@
+[
+  {
+    "term": "PowerSchool",
+    "zh": "成绩管理系统",
+    "explanation": "用于查看成绩、出勤、作业、教师评语及部分 GPA 信息的学校信息系统。",
+    "category": "academic_systems",
+    "priority": 1
+  },
+  {
+    "term": "Canvas",
+    "zh": "在线学习平台",
+    "explanation": "用于查看课程资料、作业、公告、提交任务和查看老师反馈的学习管理平台。",
+    "category": "academic_systems",
+    "priority": 1
+  },
+  {
+    "term": "Blackbaud",
+    "zh": "学校综合管理平台",
+    "explanation": "部分私校使用的学生信息、课程、成绩、账单和家校沟通平台。",
+    "category": "academic_systems",
+    "priority": 2
+  },
+  {
+    "term": "Progress Report",
+    "zh": "进度报告",
+    "explanation": "学期中阶段性学习反馈，通常不是最终正式成绩单，但能反映当前学习风险。",
+    "category": "grades",
+    "priority": 1
+  },
+  {
+    "term": "Report Card",
+    "zh": "成绩报告单",
+    "explanation": "学校在阶段或学期结束后发布的成绩报告，通常比进度报告更正式。",
+    "category": "grades",
+    "priority": 1
+  },
+  {
+    "term": "Transcript",
+    "zh": "正式成绩单",
+    "explanation": "用于转学、升学申请和学业认证的正式学业记录。",
+    "category": "grades",
+    "priority": 1
+  },
+  {
+    "term": "GPA",
+    "zh": "平均绩点",
+    "explanation": "美国学校常用的成绩量化指标，通常以 4.0 为基础，加权课程可能更高。",
+    "category": "grades",
+    "priority": 1
+  },
+  {
+    "term": "Weighted GPA",
+    "zh": "加权 GPA",
+    "explanation": "给 Honors、AP 等高难度课程额外权重后计算的 GPA。",
+    "category": "grades",
+    "priority": 2
+  },
+  {
+    "term": "Unweighted GPA",
+    "zh": "未加权 GPA",
+    "explanation": "不考虑课程难度权重，通常以 4.0 为满分计算的 GPA。",
+    "category": "grades",
+    "priority": 2
+  },
+  {
+    "term": "Honor Roll",
+    "zh": "优秀学生名单",
+    "explanation": "按 GPA 或成绩标准评选的荣誉名单，类似阶段性学业表彰。",
+    "category": "grades",
+    "priority": 2
+  },
+  {
+    "term": "Incomplete",
+    "zh": "未完成成绩",
+    "explanation": "课程成绩暂未完成，通常需要补交作业、考试或完成老师指定要求。",
+    "category": "grades",
+    "priority": 2
+  },
+  {
+    "term": "D/F Warning",
+    "zh": "低分预警",
+    "explanation": "提醒学生在某门课中可能出现 D 或 F，需要尽快联系老师并采取补救措施。",
+    "category": "grades",
+    "priority": 1
+  },
+  {
+    "term": "Counselor",
+    "zh": "学业顾问 / 升学顾问",
+    "explanation": "协助选课、学业规划、大学申请、推荐信及学生支持的学校工作人员。",
+    "category": "counseling",
+    "priority": 1
+  },
+  {
+    "term": "College Counseling",
+    "zh": "大学申请指导",
+    "explanation": "学校为学生提供的大学申请规划、选校、文书和推荐信支持。",
+    "category": "counseling",
+    "priority": 1
+  },
+  {
+    "term": "Advisor",
+    "zh": "导师",
+    "explanation": "学生在校内的日常导师，通常负责跟进学生适应、通知和基础支持。",
+    "category": "counseling",
+    "priority": 2
+  },
+  {
+    "term": "Advisory",
+    "zh": "导师小组 / 导师时间",
+    "explanation": "学生与导师定期见面的短时段，用于公告、签到、社区活动或个人支持。",
+    "category": "school_life",
+    "priority": 2
+  },
+  {
+    "term": "Recommendation Letter",
+    "zh": "推荐信",
+    "explanation": "教师或顾问为学生升学、申请项目或奖学金撰写的评价信。",
+    "category": "counseling",
+    "priority": 2
+  },
+  {
+    "term": "Course Registration",
+    "zh": "选课注册",
+    "explanation": "学生选择下一学期或下一学年课程的流程。",
+    "category": "academic_planning",
+    "priority": 1
+  },
+  {
+    "term": "Add/Drop Period",
+    "zh": "加退课窗口期",
+    "explanation": "学生可以在规定时间内调整课程的阶段。错过后通常较难更改。",
+    "category": "academic_planning",
+    "priority": 1
+  },
+  {
+    "term": "Prerequisite",
+    "zh": "先修要求",
+    "explanation": "选某门课前必须完成或达到的课程、成绩或能力条件。",
+    "category": "academic_planning",
+    "priority": 2
+  },
+  {
+    "term": "Placement Test",
+    "zh": "分班测试 / 定级测试",
+    "explanation": "用于决定学生进入哪个课程级别的测试。",
+    "category": "academic_planning",
+    "priority": 2
+  },
+  {
+    "term": "PSAT",
+    "zh": "SAT 预备考试",
+    "explanation": "SAT 前的标准化考试；11 年级 PSAT 可能与 National Merit 奖学金资格有关。",
+    "category": "testing",
+    "priority": 1
+  },
+  {
+    "term": "SAT",
+    "zh": "SAT 标准化考试",
+    "explanation": "美国大学申请常见标准化考试之一，部分学校为可选提交。",
+    "category": "testing",
+    "priority": 1
+  },
+  {
+    "term": "ACT",
+    "zh": "ACT 标准化考试",
+    "explanation": "美国大学申请常见标准化考试之一，与 SAT 类似。",
+    "category": "testing",
+    "priority": 2
+  },
+  {
+    "term": "AP",
+    "zh": "大学先修课程 / AP 考试",
+    "explanation": "Advanced Placement，大学水平高中课程及考试，部分大学可换学分。",
+    "category": "testing",
+    "priority": 1
+  },
+  {
+    "term": "AP Exam",
+    "zh": "AP 考试",
+    "explanation": "每年 5 月左右举行的大学先修课程考试，成绩可用于大学申请或换学分。",
+    "category": "testing",
+    "priority": 1
+  },
+  {
+    "term": "TOEFL",
+    "zh": "托福考试",
+    "explanation": "面向非英语母语学生的英语能力考试，部分申请或项目会要求。",
+    "category": "testing",
+    "priority": 2
+  },
+  {
+    "term": "MAP Test",
+    "zh": "MAP 学业测评",
+    "explanation": "一种自适应学业测试，常用于评估数学、阅读等学科水平。",
+    "category": "testing",
+    "priority": 3
+  },
+  {
+    "term": "Standardized Testing",
+    "zh": "标准化考试",
+    "explanation": "按统一标准进行的考试，通常用于升学、评估或能力比较。",
+    "category": "testing",
+    "priority": 2
+  },
+  {
+    "term": "Block Schedule",
+    "zh": "区块课表",
+    "explanation": "每天课数较少但单节时间较长的课表安排，常见于美高。",
+    "category": "schedule",
+    "priority": 2
+  },
+  {
+    "term": "Late Start",
+    "zh": "延迟上课日",
+    "explanation": "学校当天较平时晚开始上课，常用于教师培训或特殊安排。",
+    "category": "schedule",
+    "priority": 1
+  },
+  {
+    "term": "Early Dismissal",
+    "zh": "提前放学",
+    "explanation": "学校当天比平时提前结束课程，家长需要注意接送和活动安排。",
+    "category": "schedule",
+    "priority": 1
+  },
+  {
+    "term": "Assembly",
+    "zh": "全校集会",
+    "explanation": "学校组织的全体或年级集会，可能影响当天课表。",
+    "category": "school_life",
+    "priority": 3
+  },
+  {
+    "term": "Office Hours",
+    "zh": "教师答疑时间",
+    "explanation": "学生可在该时间向老师提问、补课、讨论作业或成绩。",
+    "category": "academic_support",
+    "priority": 1
+  },
+  {
+    "term": "Attendance",
+    "zh": "出勤",
+    "explanation": "记录学生是否到课、迟到、早退或缺勤。",
+    "category": "attendance",
+    "priority": 1
+  },
+  {
+    "term": "Excused Absence",
+    "zh": "已批准缺勤",
+    "explanation": "学校认可的缺勤原因，例如疾病、家庭原因或学校批准活动。",
+    "category": "attendance",
+    "priority": 1
+  },
+  {
+    "term": "Unexcused Absence",
+    "zh": "未批准缺勤",
+    "explanation": "未被学校认可的缺勤，可能影响出勤记录或纪律。",
+    "category": "attendance",
+    "priority": 1
+  },
+  {
+    "term": "Tardy",
+    "zh": "迟到",
+    "explanation": "学生未在规定时间进入课堂或到达学校。",
+    "category": "attendance",
+    "priority": 2
+  },
+  {
+    "term": "Make-up Work",
+    "zh": "补交 / 补做任务",
+    "explanation": "学生因缺勤或其他原因需要补交的作业、测验或课程任务。",
+    "category": "academic_support",
+    "priority": 1
+  },
+  {
+    "term": "Parent-Teacher Conference",
+    "zh": "家长教师会议",
+    "explanation": "家长与老师沟通学生学习情况、问题和改进计划的会议。",
+    "category": "parent_communication",
+    "priority": 1
+  },
+  {
+    "term": "Open House",
+    "zh": "校园开放日 / 家长开放日",
+    "explanation": "学校向家长展示课程、教师、校园或项目的活动。",
+    "category": "parent_communication",
+    "priority": 2
+  },
+  {
+    "term": "Back-to-School Night",
+    "zh": "返校说明会 / 新学期家长会",
+    "explanation": "新学期面向家长介绍课程安排、老师要求和学校资源的活动。",
+    "category": "parent_communication",
+    "priority": 2
+  },
+  {
+    "term": "Permission Slip",
+    "zh": "家长同意书",
+    "explanation": "学生参加校外活动、旅行或特殊项目时需要家长签署的许可文件。",
+    "category": "parent_communication",
+    "priority": 1
+  },
+  {
+    "term": "Field Trip",
+    "zh": "校外教学活动",
+    "explanation": "学校组织学生到校外进行学习或体验活动，通常需要许可和费用说明。",
+    "category": "activities",
+    "priority": 2
+  },
+  {
+    "term": "RSVP",
+    "zh": "回复是否参加",
+    "explanation": "要求家长或学生确认是否参加某活动。",
+    "category": "parent_communication",
+    "priority": 2
+  },
+  {
+    "term": "Detention",
+    "zh": "留校处罚 / 留校反思",
+    "explanation": "学校对迟到、违规或行为问题采取的纪律措施。",
+    "category": "conduct",
+    "priority": 1
+  },
+  {
+    "term": "Suspension",
+    "zh": "停课处分",
+    "explanation": "较严重的纪律处分，学生暂时不能上课或到校。",
+    "category": "conduct",
+    "priority": 1
+  },
+  {
+    "term": "Academic Probation",
+    "zh": "学业警示 / 学业观察",
+    "explanation": "学生因成绩或学业表现未达标而进入重点观察或改进状态。",
+    "category": "academic_support",
+    "priority": 1
+  },
+  {
+    "term": "Learning Support",
+    "zh": "学习支持服务",
+    "explanation": "学校提供的学习辅导、资源支持或特殊学习安排。",
+    "category": "academic_support",
+    "priority": 2
+  },
+  {
+    "term": "504 Plan",
+    "zh": "504 支持计划",
+    "explanation": "美国学校为符合条件学生提供学习或生活便利安排的正式计划。",
+    "category": "student_support",
+    "priority": 2
+  },
+  {
+    "term": "IEP",
+    "zh": "个别化教育计划",
+    "explanation": "为符合特殊教育条件学生制定的个别化教育计划。",
+    "category": "student_support",
+    "priority": 2
+  },
+  {
+    "term": "Wellness Check",
+    "zh": "身心健康关怀检查",
+    "explanation": "学校关注学生情绪、健康或适应状态的沟通或检查。",
+    "category": "student_support",
+    "priority": 2
+  },
+  {
+    "term": "Club Fair",
+    "zh": "社团招新展",
+    "explanation": "学校集中展示各类社团，帮助学生选择课外活动。",
+    "category": "activities",
+    "priority": 3
+  },
+  {
+    "term": "Athletics",
+    "zh": "校队体育 / 体育活动",
+    "explanation": "学校运动队、比赛和体育项目相关通知。",
+    "category": "activities",
+    "priority": 3
+  },
+  {
+    "term": "Tryouts",
+    "zh": "选拔 / 试训",
+    "explanation": "学生参加运动队、社团或表演项目之前的选拔活动。",
+    "category": "activities",
+    "priority": 2
+  },
+  {
+    "term": "Community Service",
+    "zh": "社区服务",
+    "explanation": "学校要求或鼓励学生参与的志愿服务活动，可能与毕业要求有关。",
+    "category": "activities",
+    "priority": 2
+  },
+  {
+    "term": "Service Hours",
+    "zh": "志愿服务时长",
+    "explanation": "学生参与社区服务累计的小时数，部分学校有毕业或荣誉要求。",
+    "category": "activities",
+    "priority": 2
+  },
+  {
+    "term": "Dorm Meeting",
+    "zh": "宿舍会议",
+    "explanation": "寄宿学校针对住宿学生安排的宿舍通知或会议。",
+    "category": "boarding",
+    "priority": 2
+  },
+  {
+    "term": "Residential Life",
+    "zh": "住宿生活管理",
+    "explanation": "寄宿学校中负责宿舍、生活规范和住宿活动的部门或项目。",
+    "category": "boarding",
+    "priority": 2
+  },
+  {
+    "term": "Weather Closure",
+    "zh": "因天气停课 / 关闭校园",
+    "explanation": "学校因恶劣天气取消课程或关闭校园，家长需注意接送和线上安排。",
+    "category": "emergency",
+    "priority": 1
+  },
+  {
+    "term": "Remote Learning Day",
+    "zh": "线上学习日",
+    "explanation": "学生不去校园，通过线上方式完成课程或任务。",
+    "category": "emergency",
+    "priority": 1
+  },
+  {
+    "term": "Emergency Alert",
+    "zh": "紧急通知",
+    "explanation": "学校发布的重要安全或突发事件通知，需要优先查看。",
+    "category": "emergency",
+    "priority": 1
+  },
+  {
+    "term": "Bus Schedule",
+    "zh": "校车时间表",
+    "explanation": "校车路线、时间、延误或变更通知。",
+    "category": "logistics",
+    "priority": 2
+  },
+  {
+    "term": "Drop-off",
+    "zh": "送达 / 下车点",
+    "explanation": "学生早晨到校时的送达安排或指定地点。",
+    "category": "logistics",
+    "priority": 3
+  },
+  {
+    "term": "Pick-up",
+    "zh": "接送 / 接学生地点",
+    "explanation": "放学或活动结束后的接学生安排。",
+    "category": "logistics",
+    "priority": 3
+  },
+  {
+    "term": "Tuition",
+    "zh": "学费",
+    "explanation": "学校收取的学费相关通知。",
+    "category": "finance",
+    "priority": 2
+  },
+  {
+    "term": "Financial Aid",
+    "zh": "经济资助",
+    "explanation": "学校或机构提供的学费资助、奖助学金或减免政策。",
+    "category": "finance",
+    "priority": 2
+  },
+  {
+    "term": "Billing Statement",
+    "zh": "账单通知",
+    "explanation": "学校关于学费、活动费或其他费用的账单。",
+    "category": "finance",
+    "priority": 2
+  }
+]

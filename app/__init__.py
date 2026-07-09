@@ -1,0 +1,1 @@
+"""SchoolMail Bridge application package."""
