@@ -1,24 +1,22 @@
-Current state:
-I have normalized email dictionaries from sample_email_reader.py.
 Task:
-Create:
-1. config/terms.json
-2. app/term_store.py
-3. app/termdetector.py
-terms.json fields:
- term
- zh
- explanation
- category
-- priority
-Detection requirements:
- Search both email subject and bodytext.
-- Case-insensitive matching.
-- Avoid duplicate term results.
-- Return the complete matched terminology objects.
- Do not use an LLM for this step.
-Include initial terminology:
-PowerSchool, Progress Report, Counselor, PSAT, GPA, AP, Transcript, Advisory, Block Schedule, Late Start.
+Create secure duplicate prevention for SchoolMail Bridge.
+Files:
+- app/security.py
+- app/email_identity.py
+- app/processed_store.py
+Requirements:
+1. Load EMAILFINGERPRINTSECRET from .env.
+2. Build an in-memory identity using Message-ID when present.
+3. Fall back to sender + subject + date only when Message-ID is absent.
+4. Generate HMACSHA256 using EMAIL_FINGERPRINT_SECRET.
+5. Store only:
+ - fingerprint
+ - processedat
+ - artifactpath
+6. Never store raw Message-ID in runtime/processed_emails.json.
+7. Never hash or salt OAuth/access/refresh tokens. Those tokens must remain usable and are stored separately as secrets.
+8. Add clear errors when the secret is absent or shorter than 32 characters.
 Acceptance tests:
-- "Progress Report Available on PowerSchool" returns both Progress Report and PowerSchool.
-- "AP" should not accidentally match letters inside "application
+- Same email + same secret gives the same fingerprint.
+- Same email + different secret gives a different fingerprint.
+- processedemails.json contains no raw Message-ID.
