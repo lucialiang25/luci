@@ -8,6 +8,7 @@ readable plain text using a small standard-library HTML parser.
 Public API::
 
     read_eml(path) -> dict
+    read_eml_bytes(raw, sourcepath) -> dict
 
 The returned dict has the keys ``message_id``, ``sender``, ``subject``,
 ``date``, ``bodytext`` and ``sourcepath``.
@@ -129,29 +130,23 @@ def _best_text_body(message: Message) -> str:
     return ""
 
 
-def read_eml(path: str | Path) -> dict:
-    """Read the ``.eml`` file at *path* and return the extracted fields.
+def parse_message(message: Message, sourcepath: str) -> dict:
+    """Normalize an :class:`~email.message.Message` into the shared email dict.
 
-    Returns a dict with keys: ``message_id``, ``sender``, ``subject``,
-    ``date``, ``bodytext``, ``sourcepath``. Only a short metadata summary is
-    logged — the full body is never printed (requirement #6).
+    Returns keys: ``message_id``, ``sender``, ``subject``, ``date``,
+    ``bodytext``, ``sourcepath``. Only a short metadata summary is logged —
+    the full body is never printed (requirement #6).
     """
-    eml_path = Path(path)
-    with eml_path.open("rb") as handle:
-        message = email.message_from_binary_file(handle, policy=policy.default)
-
-    # Headers may be missing; default to empty strings.
     message_id = (message.get("Message-ID") or "").strip()
     sender = (message.get("From") or "").strip()
     subject = (message.get("Subject") or "").strip()
     date = (message.get("Date") or "").strip()
     bodytext = _best_text_body(message)
 
-    # Log a concise summary only — never the entire body.
     preview = " ".join(bodytext.split())[:60]
     log.info(
         "read %s | subject=%r | sender=%r | body_chars=%d | preview=%r",
-        eml_path.name, subject, sender, len(bodytext), preview,
+        sourcepath, subject, sender, len(bodytext), preview,
     )
 
     return {
@@ -160,8 +155,22 @@ def read_eml(path: str | Path) -> dict:
         "subject": subject,
         "date": date,
         "bodytext": bodytext,
-        "sourcepath": str(eml_path),
+        "sourcepath": sourcepath,
     }
+
+
+def read_eml_bytes(raw: bytes, sourcepath: str) -> dict:
+    """Parse raw RFC822 bytes (e.g. an IMAP FETCH payload) into the shared dict."""
+    message = email.message_from_bytes(raw, policy=policy.default)
+    return parse_message(message, sourcepath)
+
+
+def read_eml(path: str | Path) -> dict:
+    """Read the ``.eml`` file at *path* and return the extracted fields."""
+    eml_path = Path(path)
+    with eml_path.open("rb") as handle:
+        message = email.message_from_binary_file(handle, policy=policy.default)
+    return parse_message(message, str(eml_path))
 
 
 if __name__ == "__main__":
