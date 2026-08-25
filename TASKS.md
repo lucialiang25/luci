@@ -1,22 +1,20 @@
 Task:
-Create secure duplicate prevention for SchoolMail Bridge.
-Files:
-- app/security.py
-- app/email_identity.py
-- app/processed_store.py
-Requirements:
-1. Load EMAILFINGERPRINTSECRET from .env.
-2. Build an in-memory identity using Message-ID when present.
-3. Fall back to sender + subject + date only when Message-ID is absent.
-4. Generate HMACSHA256 using EMAIL_FINGERPRINT_SECRET.
-5. Store only:
- - fingerprint
- - processedat
- - artifactpath
-6. Never store raw Message-ID in runtime/processed_emails.json.
-7. Never hash or salt OAuth/access/refresh tokens. Those tokens must remain usable and are stored separately as secrets.
-8. Add clear errors when the secret is absent or shorter than 32 characters.
-Acceptance tests:
-- Same email + same secret gives the same fingerprint.
-- Same email + different secret gives a different fingerprint.
-- processedemails.json contains no raw Message-ID.
+Create an offline pipeline runner for SchoolMail Bridge.
+Input:
+data/sample_emails/progress_report.eml
+Steps:
+1. Parse local email.
+2. Check salted HMAC duplicate fingerprint.
+3. Detect terminology from config/terms.json.
+4. Use a fake translator that returns structured Chinese placeholder output.
+5. Save a translated artifact to runtime/translated_messages/.
+6. Render a parentfacing Markdown message.
+7. Save the rendered message into runtime/pushlog.jsonl.
+8. Mark the email fingerprint as processed only after artifact and local log creation succeed.
+Constraints:
+ No real LLM API.
+ No real mailbox.
+- No WeCom webhook.
+- Do not expose raw Message-ID in runtime files.
+Return:
+- app/pipeline.py;
