@@ -109,11 +109,35 @@ def parse_model_json(content: str) -> dict:
     raise TranslationError(f"Model response is not valid JSON: {last_error}")
 
 
+def _clean_str_list(value) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item).strip() for item in value if isinstance(item, (str, int, float)) and str(item).strip()]
+
+
+def _clean_schedule(value) -> list[dict]:
+    if not isinstance(value, list):
+        return []
+    days = []
+    for entry in value:
+        if not isinstance(entry, dict):
+            continue
+        date = str(entry.get("date", "")).strip()
+        items = _clean_str_list(entry.get("items"))
+        if date and items:
+            days.append({"date": date, "items": items})
+    return days
+
+
 def _validate_translation(data: dict) -> dict:
     missing = [key for key in REQUIRED_KEYS if not str(data.get(key, "")).strip()]
     if missing:
         raise TranslationError(f"Model JSON missing required keys: {', '.join(missing)}")
-    return {key: str(data[key]).strip() for key in REQUIRED_KEYS}
+    cleaned = {key: str(data[key]).strip() for key in REQUIRED_KEYS}
+    cleaned["key_points"] = _clean_str_list(data.get("key_points"))
+    cleaned["action_items"] = _clean_str_list(data.get("action_items"))
+    cleaned["schedule"] = _clean_schedule(data.get("schedule"))
+    return cleaned
 
 
 def _build_messages(subject: str, bodytext: str, detected_terms: list[dict]) -> list[dict]:
@@ -124,10 +148,21 @@ def _build_messages(subject: str, bodytext: str, detected_terms: list[dict]) -> 
     terms_block = "\n".join(term_lines) if term_lines else "(none detected)"
     body = (bodytext or "")[:MAX_BODY_CHARS]
     user_prompt = (
-        "Translate this school email for Chinese-speaking parents.\n"
-        "Return ONLY a JSON object with keys subject_zh and summary_zh.\n"
-        "summary_zh must be a clear Simplified Chinese summary of the email body "
-        "(not a placeholder). Keep school terms accurate.\n\n"
+        "Turn this school email into a message Chinese-speaking parents can scan quickly.\n"
+        "Return ONLY a JSON object with these keys (all text in Simplified Chinese):\n"
+        '- "subject_zh": translated subject.\n'
+        '- "summary_zh": 1-2 sentences: who sent it, what it is about, who it concerns. '
+        "Do NOT translate the whole email here.\n"
+        '- "key_points": list of short strings, most important first: changes, '
+        "cancellations, reschedules, deadlines, safety or cost items.\n"
+        '- "action_items": list of short strings for what the parent or student must do, '
+        "each with its date/time if any. Empty list if nothing is required.\n"
+        '- "schedule": list of {"date": "...", "items": ["..."]} in date order when the '
+        "email lists dated events; otherwise an empty list.\n"
+        "Rules: keep names of people, schools, towns, teams and businesses in their "
+        "original English (e.g. Glastonbury, Mt. St. Charles); never half-translate a name. "
+        "Use the detected term translations below. Keep every time and date exact. "
+        "Do not invent content that is not in the email.\n\n"
         f"Subject: {subject}\n\n"
         f"Body:\n{body}\n\n"
         f"Detected terms:\n{terms_block}\n"
@@ -167,6 +202,9 @@ def fake_translate(subject: str, bodytext: str, detected_terms: list[dict]) -> d
             "（占位）这是一份离线生成的摘要，未经真实翻译引擎处理。"
             f"原文主题：{subject}。请家长以学校英文原件为准。"
         ),
+        "key_points": [],
+        "action_items": [],
+        "schedule": [],
         "terms": _terms_out(detected_terms),
     }
 
@@ -186,7 +224,7 @@ def live_translate(
         "model": cfg.model,
         "messages": _build_messages(subject, bodytext, detected_terms),
         "temperature": 0.2,
-        "max_completion_tokens": 1200,
+        "max_completion_tokens": 2500,
     }
     headers = {
         "Authorization": f"Bearer {cfg.api_key}",
@@ -221,6 +259,9 @@ def live_translate(
         "model": cfg.model,
         "subject_zh": parsed["subject_zh"],
         "summary_zh": parsed["summary_zh"],
+        "key_points": parsed["key_points"],
+        "action_items": parsed["action_items"],
+        "schedule": parsed["schedule"],
         "terms": _terms_out(detected_terms),
     }
 

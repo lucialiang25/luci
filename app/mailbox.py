@@ -1,6 +1,7 @@
 """Live IMAP mailbox connector for SchoolMail Bridge.
 
-Reads Gmail (or any IMAP server) using an app password from ``.env``.
+Logs in to Gmail with OAuth 2.0 (IMAP ``XOAUTH2``) by default; set
+``EMAIL_AUTH_METHOD=app_password`` to use a Gmail App Password instead.
 Fetched messages are normalized through :func:`app.sample_email_reader.read_eml_bytes`
 so live mail and sample ``.eml`` files share the same email dict.
 
@@ -15,12 +16,22 @@ import os
 from contextlib import contextmanager
 from dataclasses import dataclass
 
+from .gmail_oauth import (
+    DEFAULT_TOKEN_FILE,
+    GmailOAuthError,
+    build_xoauth2_string,
+    get_access_token,
+)
 from .sample_email_reader import read_eml_bytes
 from .security import load_dotenv_if_present
 
 DEFAULT_IMAP_HOST = "imap.gmail.com"
 DEFAULT_IMAP_PORT = 993
 DEFAULT_FOLDER = "INBOX"
+
+AUTH_OAUTH2 = "oauth2"
+AUTH_APP_PASSWORD = "app_password"
+AUTH_METHODS = (AUTH_OAUTH2, AUTH_APP_PASSWORD)
 
 
 class MailboxConfigError(Exception):
@@ -34,10 +45,12 @@ class MailboxError(Exception):
 @dataclass(frozen=True)
 class ImapConfig:
     address: str
-    password: str
+    password: str = ""
     host: str = DEFAULT_IMAP_HOST
     port: int = DEFAULT_IMAP_PORT
     folder: str = DEFAULT_FOLDER
+    auth_method: str = AUTH_OAUTH2
+    oauth_token_file: str = str(DEFAULT_TOKEN_FILE)
 
 
 def load_imap_config(env: dict[str, str] | None = None) -> ImapConfig:
@@ -47,6 +60,10 @@ def load_imap_config(env: dict[str, str] | None = None) -> ImapConfig:
         env = os.environ
 
     address = (env.get("EMAIL_ADDRESS") or "").strip()
+    auth_method = (env.get("EMAIL_AUTH_METHOD") or AUTH_OAUTH2).strip().lower() or AUTH_OAUTH2
+    token_file = (
+        (env.get("GMAIL_OAUTH_TOKEN_FILE") or "").strip() or str(DEFAULT_TOKEN_FILE)
+    )
     password = (env.get("EMAIL_APP_PASSWORD") or "").replace(" ", "").strip()
     host = (env.get("IMAP_SERVER") or DEFAULT_IMAP_HOST).strip() or DEFAULT_IMAP_HOST
     folder = (env.get("IMAP_FOLDER") or DEFAULT_FOLDER).strip() or DEFAULT_FOLDER
@@ -55,20 +72,26 @@ def load_imap_config(env: dict[str, str] | None = None) -> ImapConfig:
     except ValueError as exc:
         raise MailboxConfigError("IMAP_PORT must be an integer.") from exc
 
+    if auth_method not in AUTH_METHODS:
+        raise MailboxConfigError(
+            f"EMAIL_AUTH_METHOD must be one of: {', '.join(AUTH_METHODS)}."
+        )
     if not address or address.startswith("your_email@"):
         raise MailboxConfigError(
             "EMAIL_ADDRESS is missing. Set your Gmail address in the .env file."
         )
-    if not password or password.startswith("replace_"):
+    if auth_method == AUTH_APP_PASSWORD and (not password or password.startswith("replace_")):
         raise MailboxConfigError(
             "EMAIL_APP_PASSWORD is missing. Set a Gmail App Password in the .env file."
         )
     return ImapConfig(
         address=address,
-        password=password,
+        password=password if auth_method == AUTH_APP_PASSWORD else "",
         host=host,
         port=port,
         folder=folder,
+        auth_method=auth_method,
+        oauth_token_file=token_file,
     )
 
 
@@ -88,10 +111,29 @@ def extract_rfc822(data) -> bytes:
 
 def connect(config: ImapConfig) -> imaplib.IMAP4_SSL:
     """Open an SSL IMAP session. Does not log credentials."""
+    if config.auth_method == AUTH_OAUTH2:
+        try:
+            access_token = get_access_token(config.oauth_token_file)
+        except GmailOAuthError as exc:
+            raise MailboxConfigError(str(exc)) from exc
+        auth_string = build_xoauth2_string(config.address, access_token).encode("utf-8")
+
     client = imaplib.IMAP4_SSL(config.host, config.port)
     try:
-        client.login(config.address, config.password)
+        if config.auth_method == AUTH_OAUTH2:
+            client.authenticate("XOAUTH2", lambda _challenge: auth_string)
+        else:
+            client.login(config.address, config.password)
     except imaplib.IMAP4.error as exc:
+        try:
+            client.shutdown()
+        except Exception:
+            pass
+        if config.auth_method == AUTH_OAUTH2:
+            raise MailboxError(
+                "IMAP XOAUTH2 login failed. Check that EMAIL_ADDRESS is the Google "
+                "account you authorized and that IMAP is enabled in Gmail settings."
+            ) from exc
         raise MailboxError(
             "IMAP login failed. Check EMAIL_ADDRESS, the Gmail App Password, "
             "and that IMAP is enabled in Gmail settings."

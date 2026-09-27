@@ -385,6 +385,90 @@
     "priority": 2
   },
   {
+    "term": "Varsity",
+    "zh": "校队（一队）",
+    "explanation": "学校某项运动中水平最高的代表队，训练和比赛强度通常高于二队。",
+    "category": "athletics",
+    "priority": 2
+  },
+  {
+    "term": "Junior Varsity",
+    "zh": "二队 / 青年校队",
+    "explanation": "水平次于一队的学校代表队，通常以低年级或新队员为主，缩写为 JV。",
+    "category": "athletics",
+    "priority": 2
+  },
+  {
+    "term": "JV",
+    "zh": "二队 / 青年校队",
+    "explanation": "Junior Varsity 的缩写，水平次于一队（Varsity）的学校代表队。",
+    "category": "athletics",
+    "priority": 2
+  },
+  {
+    "term": "Field Hockey",
+    "zh": "草地曲棍球",
+    "explanation": "美国女校常见的秋季团队运动，在草地或人造草场上用球杆击球。",
+    "category": "athletics",
+    "priority": 3
+  },
+  {
+    "term": "Scrimmage",
+    "zh": "练习赛 / 热身赛",
+    "explanation": "不计入正式战绩的比赛，用于训练和磨合。",
+    "category": "athletics",
+    "priority": 3
+  },
+  {
+    "term": "Home Game",
+    "zh": "主场比赛",
+    "explanation": "在本校场地进行的比赛，家长通常可以到场观看。",
+    "category": "athletics",
+    "priority": 3
+  },
+  {
+    "term": "Away Game",
+    "zh": "客场比赛",
+    "explanation": "在对方学校场地进行的比赛，需注意出发时间、交通和返校时间。",
+    "category": "athletics",
+    "priority": 2
+  },
+  {
+    "term": "Concession Stand",
+    "zh": "小吃售卖摊",
+    "explanation": "比赛或活动现场售卖食物饮料的摊位，常由家长志愿者捐赠物品或值班。",
+    "category": "athletics",
+    "priority": 3
+  },
+  {
+    "term": "Duty Roster",
+    "zh": "值日 / 分工安排",
+    "explanation": "列出每位队员或志愿者负责事项（如搬器材、带水、带冰）的分工表。",
+    "category": "athletics",
+    "priority": 3
+  },
+  {
+    "term": "Booster Club",
+    "zh": "家长后援会",
+    "explanation": "支持学校运动队或社团的家长组织，负责筹款、志愿服务和活动支持。",
+    "category": "athletics",
+    "priority": 3
+  },
+  {
+    "term": "Athletic Trainer",
+    "zh": "运动防护师",
+    "explanation": "学校负责运动伤害预防、处理和康复的专业人员。",
+    "category": "athletics",
+    "priority": 2
+  },
+  {
+    "term": "Sports Physical",
+    "zh": "运动体检",
+    "explanation": "学生参加校队前通常需要提交的体检证明，未交可能无法参加训练或比赛。",
+    "category": "athletics",
+    "priority": 1
+  },
+  {
     "term": "Community Service",
     "zh": "社区服务",
     "explanation": "学校要求或鼓励学生参与的志愿服务活动，可能与毕业要求有关。",

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import json as _json
 
 import pytest
 import requests
@@ -123,6 +124,58 @@ def test_translate_email_uses_minimax_when_available(monkeypatch):
     assert captured["headers"]["Authorization"] == "Bearer sk-test"
     assert captured["timeout"] == 30
     assert "sk-test" not in json.dumps(captured["json"])
+
+
+def _minimax_reply(content: dict):
+    def fake_post(url, headers=None, json=None, timeout=None):
+        fake_post.payload = json
+        return FakeResponse(
+            200,
+            {"choices": [{"message": {"role": "assistant", "content": _json.dumps(content, ensure_ascii=False)}}]},
+        )
+
+    return fake_post
+
+
+def test_translate_email_returns_structured_sections(monkeypatch):
+    fake_post = _minimax_reply(
+        {
+            "subject_zh": "9月28日至10月3日安排",
+            "summary_zh": "曲棍球教练发来下周训练和比赛安排。",
+            "key_points": ["校队对 Mt. St. Charles 的比赛改到10月5日下午4点", "", 7, None],
+            "action_items": ["10月3日上午7:15到场集合"],
+            "schedule": [
+                {"date": "9月28日（周一）", "items": ["二队训练 3:45-5:15"]},
+                {"date": "", "items": ["no date"]},
+                {"date": "9月29日（周二）", "items": []},
+                "bad entry",
+            ],
+        }
+    )
+    monkeypatch.setattr(ai_translator.requests, "post", fake_post)
+
+    result = translate_email("Schedule", "Body", [], env={"MINIMAX_API_KEY": "sk-test"})
+
+    assert result["engine"] == "minimax"
+    assert result["key_points"] == ["校队对 Mt. St. Charles 的比赛改到10月5日下午4点", "7"]
+    assert result["action_items"] == ["10月3日上午7:15到场集合"]
+    assert result["schedule"] == [{"date": "9月28日（周一）", "items": ["二队训练 3:45-5:15"]}]
+    prompt = fake_post.payload["messages"][1]["content"]
+    for key in ("key_points", "action_items", "schedule"):
+        assert key in prompt
+    assert "never half-translate a name" in prompt
+
+
+def test_translate_email_tolerates_missing_optional_sections(monkeypatch):
+    monkeypatch.setattr(
+        ai_translator.requests,
+        "post",
+        _minimax_reply({"subject_zh": "通知", "summary_zh": "学校发来通知。", "schedule": "none"}),
+    )
+    result = translate_email("Notice", "Body", [], env={"MINIMAX_API_KEY": "sk-test"})
+    assert result["key_points"] == []
+    assert result["action_items"] == []
+    assert result["schedule"] == []
 
 
 def test_translate_email_falls_back_on_http_error(monkeypatch):

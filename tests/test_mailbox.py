@@ -1,11 +1,16 @@
 """Tests for the IMAP mailbox connector (no live network)."""
 
+import imaplib
 from pathlib import Path
 
 import pytest
 
+from app import mailbox
+from app.gmail_oauth import GmailOAuthError
 from app.mailbox import (
     MailboxConfigError,
+    MailboxError,
+    connect,
     extract_rfc822,
     fetch_message,
     list_messages,
@@ -47,23 +52,104 @@ def test_load_imap_config_requires_address():
         load_imap_config({"EMAIL_APP_PASSWORD": "x" * 16})
 
 
-def test_load_imap_config_requires_password():
-    with pytest.raises(MailboxConfigError, match="EMAIL_APP_PASSWORD"):
-        load_imap_config({"EMAIL_ADDRESS": "parent@gmail.com"})
-
-
-def test_load_imap_config_strips_spaces_and_defaults_gmail():
-    cfg = load_imap_config(
-        {
-            "EMAIL_ADDRESS": " parent@gmail.com ",
-            "EMAIL_APP_PASSWORD": "abcd efgh ijkl mnop",
-        }
-    )
+def test_load_imap_config_defaults_to_oauth2_without_password():
+    cfg = load_imap_config({"EMAIL_ADDRESS": " parent@gmail.com "})
     assert cfg.address == "parent@gmail.com"
-    assert cfg.password == "abcdefghijklmnop"
+    assert cfg.auth_method == "oauth2"
+    assert cfg.password == ""
+    assert cfg.oauth_token_file == ".secrets/gmail_token.json"
     assert cfg.host == "imap.gmail.com"
     assert cfg.port == 993
     assert cfg.folder == "INBOX"
+
+
+def test_load_imap_config_rejects_unknown_auth_method():
+    with pytest.raises(MailboxConfigError, match="EMAIL_AUTH_METHOD"):
+        load_imap_config({"EMAIL_ADDRESS": "parent@gmail.com", "EMAIL_AUTH_METHOD": "basic"})
+
+
+def test_load_imap_config_app_password_requires_password():
+    with pytest.raises(MailboxConfigError, match="EMAIL_APP_PASSWORD"):
+        load_imap_config(
+            {"EMAIL_ADDRESS": "parent@gmail.com", "EMAIL_AUTH_METHOD": "app_password"}
+        )
+
+
+def test_load_imap_config_app_password_strips_spaces():
+    cfg = load_imap_config(
+        {
+            "EMAIL_ADDRESS": "parent@gmail.com",
+            "EMAIL_AUTH_METHOD": "app_password",
+            "EMAIL_APP_PASSWORD": "abcd efgh ijkl mnop",
+        }
+    )
+    assert cfg.auth_method == "app_password"
+    assert cfg.password == "abcdefghijklmnop"
+
+
+class FakeSSL:
+    """Records how connect() authenticates instead of opening a socket."""
+
+    def __init__(self, host, port, fail=False):
+        self.host, self.port, self.fail = host, port, fail
+        self.auth = None
+        self.closed = False
+
+    def authenticate(self, mechanism, authobject):
+        self.auth = (mechanism, authobject(b""))
+        if self.fail:
+            raise imaplib.IMAP4.error("AUTHENTICATE failed")
+        return "OK", [b"Success"]
+
+    def login(self, user, password):
+        self.auth = ("LOGIN", user, password)
+        return "OK", [b"Success"]
+
+    def shutdown(self):
+        self.closed = True
+
+
+def test_connect_oauth2_uses_xoauth2(monkeypatch):
+    created = []
+    monkeypatch.setattr(
+        mailbox.imaplib, "IMAP4_SSL", lambda h, p: created.append(FakeSSL(h, p)) or created[-1]
+    )
+    monkeypatch.setattr(mailbox, "get_access_token", lambda token_file: "ya29.test")
+
+    client = connect(load_imap_config({"EMAIL_ADDRESS": "parent@gmail.com"}))
+
+    assert client is created[0]
+    assert client.auth == (
+        "XOAUTH2",
+        b"user=parent@gmail.com\x01auth=Bearer ya29.test\x01\x01",
+    )
+
+
+def test_connect_oauth2_missing_token_is_config_error(monkeypatch):
+    def no_token(token_file):
+        raise GmailOAuthError("Gmail OAuth token not found. Run `python -m app.gmail_oauth`.")
+
+    monkeypatch.setattr(mailbox, "get_access_token", no_token)
+    monkeypatch.setattr(
+        mailbox.imaplib, "IMAP4_SSL", lambda h, p: pytest.fail("must not open a socket")
+    )
+    with pytest.raises(MailboxConfigError, match="app.gmail_oauth"):
+        connect(load_imap_config({"EMAIL_ADDRESS": "parent@gmail.com"}))
+
+
+def test_connect_oauth2_rejected_closes_socket(monkeypatch):
+    created = []
+    monkeypatch.setattr(
+        mailbox.imaplib,
+        "IMAP4_SSL",
+        lambda h, p: created.append(FakeSSL(h, p, fail=True)) or created[-1],
+    )
+    monkeypatch.setattr(mailbox, "get_access_token", lambda token_file: "ya29.test")
+
+    with pytest.raises(MailboxError, match="XOAUTH2") as excinfo:
+        connect(load_imap_config({"EMAIL_ADDRESS": "parent@gmail.com"}))
+    assert created[0].closed
+    assert "ya29.test" not in str(excinfo.value)
 
 
 def test_extract_rfc822_from_imaplib_fetch_tuple():

@@ -130,6 +130,39 @@ def test_run_pipeline_prefers_minimax_translation(tmp_path, monkeypatch):
     assert Path(result["origin_path"]).is_file()
 
 
+def test_render_markdown_structured_sections_and_image_notice():
+    md = pipeline.render_markdown(
+        {
+            "engine": "minimax",
+            "model": "MiniMax-M2.5",
+            "subject_zh": "9月28日至10月3日安排",
+            "summary_zh": "曲棍球教练发来下周安排。",
+            "key_points": ["校队比赛改到10月5日下午4点"],
+            "action_items": ["10月3日上午7:15到场"],
+            "schedule": [{"date": "9月28日（周一）", "items": ["二队训练 3:45-5:15", "校队训练 3:45-5:20"]}],
+            "terms": [],
+        },
+        "fp123",
+        image_count=4,
+    )
+    assert md.index("## 摘要") < md.index("## 重点") < md.index("## 需要做的事") < md.index("## 日程")
+    assert "- 校队比赛改到10月5日下午4点" in md
+    assert "**9月28日（周一）**\n- 二队训练 3:45-5:15\n- 校队训练 3:45-5:20" in md
+    assert "原邮件包含 4 张图片" in md
+
+
+def test_render_markdown_omits_empty_sections():
+    md = pipeline.render_markdown(fake_translate("Subject", "Body", []), "fp123")
+    for heading in ("## 重点", "## 需要做的事", "## 日程", "张图片"):
+        assert heading not in md
+
+
+def test_count_inline_images():
+    body = "Items:\n[image: a.png][image: b.png]\nThanks"
+    assert pipeline.count_inline_images(body) == 2
+    assert pipeline.count_inline_images("") == 0
+
+
 def test_main_live_requires_list_or_uid(capsys):
     rc = pipeline.main(["--source", "live"])
     assert rc == 1

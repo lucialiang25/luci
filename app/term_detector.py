@@ -24,9 +24,11 @@ def _term_matches(term: str, text: str) -> bool:
     """True if *term* appears in *text* as a whole word/phrase.
 
     An optional trailing ``s`` is allowed so plurals such as
-    "Progress Reports" still match.
+    "Progress Reports" still match. Words in a multi-word term may be separated
+    by any whitespace, since email bodies are often hard-wrapped mid-phrase.
     """
-    pattern = r"\b" + re.escape(term) + r"s?\b"
+    phrase = r"\s+".join(re.escape(word) for word in term.split())
+    pattern = r"\b" + phrase + r"s?\b"
     return re.search(pattern, text, flags=re.IGNORECASE) is not None
 
 
