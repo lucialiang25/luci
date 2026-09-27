@@ -3,6 +3,10 @@
 .env.local
 .env.*.local
 
+# OAuth client files and refresh tokens
+.secrets/
+client_secret*.json
+
 # ── Runtime data (ignored per project requirements) ──────────
 # The pipeline writes artifacts, push logs, the processed-fingerprint store,
 # and a generated HMAC secret here — none of it should be committed.
