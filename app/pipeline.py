@@ -81,7 +81,12 @@ def save_origin_message(email: dict, fingerprint: str) -> Path:
     return path
 
 
-def render_markdown(translation: dict, fingerprint: str) -> str:
+def count_inline_images(bodytext: str) -> int:
+    """Count image placeholders (``[image: ...]``) left in a plain-text body."""
+    return (bodytext or "").count("[image:")
+
+
+def render_markdown(translation: dict, fingerprint: str, image_count: int = 0) -> str:
     """Render a parent-facing Markdown message.
 
     Only the salted ``fingerprint`` is referenced — the raw Message-ID is never
@@ -94,9 +99,26 @@ def render_markdown(translation: dict, fingerprint: str) -> str:
         "",
         "## 摘要",
         translation["summary_zh"],
-        "",
-        "## 涉及术语",
     ]
+
+    key_points = translation.get("key_points") or []
+    if key_points:
+        lines += ["", "## 重点"] + [f"- {point}" for point in key_points]
+
+    action_items = translation.get("action_items") or []
+    if action_items:
+        lines += ["", "## 需要做的事"] + [f"- {item}" for item in action_items]
+
+    schedule = translation.get("schedule") or []
+    if schedule:
+        lines += ["", "## 日程"]
+        for day in schedule:
+            lines += ["", f"**{day['date']}**"] + [f"- {item}" for item in day["items"]]
+
+    if image_count:
+        lines += ["", f"> 原邮件包含 {image_count} 张图片，图片内容未翻译，请查看原邮件。"]
+
+    lines += ["", "## 涉及术语"]
     terms = translation.get("terms", [])
     if terms:
         for t in terms:
@@ -154,7 +176,9 @@ def run_pipeline_on_email(email: dict, secret: str | None = None) -> dict:
     detected = detect_from_email(email, TermStore())
     translation = translate_email(email["subject"], email["bodytext"], detected)
     artifact_path = save_translation_artifact(translation, fingerprint)
-    rendered = render_markdown(translation, fingerprint)
+    rendered = render_markdown(
+        translation, fingerprint, image_count=count_inline_images(email["bodytext"])
+    )
     append_push_log(fingerprint, rendered, artifact_path)
     mark_processed(fingerprint, artifact_path=str(artifact_path))
 
